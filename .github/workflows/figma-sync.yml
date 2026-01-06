@@ -1,0 +1,81 @@
+name: Figma Sync
+
+on:
+  schedule:
+    # Run every day at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: 'Force sync even if no changes detected'
+        required: false
+        default: 'false'
+
+jobs:
+  figma-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Figma design tokens
+        env:
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+        run: npm run sync:tokens
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.changes == 'true' || github.event.inputs.force_sync == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore(design): sync Figma design tokens'
+          title: '🎨 Sync Figma Design Tokens'
+          body: |
+            ## Figma Design System Sync
+
+            This PR updates design tokens from the Chakra UI Figma Kit v3.
+
+            ### Changes
+            - Design tokens updated from Figma
+            - Theme colors, spacing, typography synced
+
+            ### Review Checklist
+            - [ ] Review Chromatic snapshots for visual changes
+            - [ ] Verify component styling matches Figma
+            - [ ] Test responsive behavior
+
+            **Figma Source:** https://www.figma.com/design/ZUi5xVkIKAokS1nS78jN1l/Chakra-UI----Figma-Kit--v3
+          branch: figma-sync-${{ github.run_number }}
+          delete-branch: true
+          labels: |
+            design-system
+            automated
+
+      - name: Build Storybook
+        if: steps.check-changes.outputs.changes == 'true'
+        run: npm run build-storybook
+
+      - name: Publish to Chromatic
+        if: steps.check-changes.outputs.changes == 'true'
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitZeroOnChanges: true
