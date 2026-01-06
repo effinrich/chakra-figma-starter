@@ -46,7 +46,7 @@ const meta: Meta<typeof Button> = {
       control: 'boolean',
       description: 'Loading state',
       table: {
-        defaultValue: { summary: false },
+        defaultValue: { summary: 'false' },
       },
     },
     disabled: {
@@ -68,6 +68,18 @@ export const Default: Story = {
     variant: 'solid',
     size: 'md',
     colorPalette: 'primary',
+    onClick: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /button/i })
+
+    await expect(button).toBeInTheDocument()
+    await expect(button).toBeVisible()
+    await expect(button).toBeEnabled()
+
+    await userEvent.click(button)
+    await expect(args.onClick).toHaveBeenCalledTimes(1)
   },
 }
 
@@ -90,6 +102,25 @@ export const Variants: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const solidBtn = canvas.getByRole('button', { name: /solid/i })
+    const outlineBtn = canvas.getByRole('button', { name: /outline/i })
+    const ghostBtn = canvas.getByRole('button', { name: /ghost/i })
+    const linkBtn = canvas.getByRole('button', { name: /link/i })
+
+    await expect(solidBtn).toBeVisible()
+    await expect(outlineBtn).toBeVisible()
+    await expect(ghostBtn).toBeVisible()
+    await expect(linkBtn).toBeVisible()
+
+    // Verify all buttons are clickable
+    await userEvent.click(solidBtn)
+    await userEvent.click(outlineBtn)
+    await userEvent.click(ghostBtn)
+    await userEvent.click(linkBtn)
+  },
 }
 
 /**
@@ -110,6 +141,25 @@ export const Sizes: Story = {
         story: 'Button comes in four sizes: xs, sm, md, and lg.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const xsBtn = canvas.getByRole('button', { name: /extra small/i })
+    const smBtn = canvas.getByRole('button', { name: /^small$/i })
+    const mdBtn = canvas.getByRole('button', { name: /medium/i })
+    const lgBtn = canvas.getByRole('button', { name: /large/i })
+
+    await expect(xsBtn).toBeVisible()
+    await expect(smBtn).toBeVisible()
+    await expect(mdBtn).toBeVisible()
+    await expect(lgBtn).toBeVisible()
+
+    // All sizes should be enabled and interactive
+    await expect(xsBtn).toBeEnabled()
+    await expect(smBtn).toBeEnabled()
+    await expect(mdBtn).toBeEnabled()
+    await expect(lgBtn).toBeEnabled()
   },
 }
 
@@ -138,6 +188,28 @@ export const ColorSchemes: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const primaryBtn = canvas.getByRole('button', { name: /primary/i })
+    const grayBtn = canvas.getByRole('button', { name: /gray/i })
+    const successBtn = canvas.getByRole('button', { name: /success/i })
+    const errorBtn = canvas.getByRole('button', { name: /error/i })
+    const warningBtn = canvas.getByRole('button', { name: /warning/i })
+    const infoBtn = canvas.getByRole('button', { name: /info/i })
+
+    // Verify all color scheme buttons render
+    await expect(primaryBtn).toBeVisible()
+    await expect(grayBtn).toBeVisible()
+    await expect(successBtn).toBeVisible()
+    await expect(errorBtn).toBeVisible()
+    await expect(warningBtn).toBeVisible()
+    await expect(infoBtn).toBeVisible()
+
+    // Verify all are clickable
+    await userEvent.click(primaryBtn)
+    await userEvent.click(errorBtn)
+  },
 }
 
 /**
@@ -163,6 +235,23 @@ export const WithIcons: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const emailBtn = canvas.getByRole('button', { name: /email/i })
+    const continueBtn = canvas.getByRole('button', { name: /continue/i })
+
+    await expect(emailBtn).toBeVisible()
+    await expect(continueBtn).toBeVisible()
+
+    // Verify icons are rendered (buttons should contain svg elements)
+    await expect(emailBtn.querySelector('svg')).toBeInTheDocument()
+    await expect(continueBtn.querySelector('svg')).toBeInTheDocument()
+
+    // Verify clickable
+    await userEvent.click(emailBtn)
+    await userEvent.click(continueBtn)
+  },
 }
 
 /**
@@ -185,6 +274,19 @@ export const Loading: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const loadingBtn = canvas.getByRole('button', { name: /loading/i })
+    const processingBtn = canvas.getByRole('button', { name: /processing/i })
+
+    await expect(loadingBtn).toBeVisible()
+    await expect(processingBtn).toBeVisible()
+
+    // Loading buttons should be disabled
+    await expect(loadingBtn).toBeDisabled()
+    await expect(processingBtn).toBeDisabled()
+  },
 }
 
 /**
@@ -194,12 +296,18 @@ export const Disabled: Story = {
   args: {
     children: 'Disabled',
     disabled: true,
+    onClick: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
     const button = canvas.getByRole('button')
 
     await expect(button).toBeDisabled()
+    await expect(button).toBeVisible()
+
+    // Clicking disabled button should not trigger onClick
+    await userEvent.click(button)
+    await expect(args.onClick).not.toHaveBeenCalled()
   },
 }
 
@@ -262,8 +370,20 @@ export const FullWidth: Story = {
   args: {
     children: 'Full Width Button',
     width: 'full',
+    onClick: fn(),
   },
   parameters: {
     layout: 'padded',
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /full width/i })
+
+    await expect(button).toBeVisible()
+    await expect(button).toBeEnabled()
+
+    // Verify button is clickable
+    await userEvent.click(button)
+    await expect(args.onClick).toHaveBeenCalledTimes(1)
   },
 }

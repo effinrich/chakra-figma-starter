@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { expect, within } from '@storybook/test'
+import { expect, userEvent, within, fn } from '@storybook/test'
 import { Card, CardHeader, CardBody, CardFooter } from './Card'
 import { Button } from '../Button'
 import { HStack, VStack, Text, Image, Box } from '@chakra-ui/react'
@@ -61,6 +61,19 @@ export const Default: Story = {
     ),
     width: '320px',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify card structure renders
+    await expect(canvas.getByText('Card Title')).toBeVisible()
+    await expect(canvas.getByText(/This is the card body/i)).toBeVisible()
+
+    // Verify action button is present and clickable
+    const actionBtn = canvas.getByRole('button', { name: /action/i })
+    await expect(actionBtn).toBeVisible()
+    await expect(actionBtn).toBeEnabled()
+    await userEvent.click(actionBtn)
+  },
 }
 
 /**
@@ -89,6 +102,19 @@ export const Variants: Story = {
       </Card>
     </HStack>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify all variant cards render
+    await expect(canvas.getByText('Elevated')).toBeVisible()
+    await expect(canvas.getByText('Outline')).toBeVisible()
+    await expect(canvas.getByText('Filled')).toBeVisible()
+
+    // Verify descriptions
+    await expect(canvas.getByText(/shadow elevation/i)).toBeVisible()
+    await expect(canvas.getByText(/border outline/i)).toBeVisible()
+    await expect(canvas.getByText(/filled background/i)).toBeVisible()
+  },
 }
 
 /**
@@ -111,6 +137,19 @@ export const Sizes: Story = {
       </Card>
     </VStack>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify all size cards render
+    await expect(canvas.getByText('Small Card')).toBeVisible()
+    await expect(canvas.getByText('Medium Card')).toBeVisible()
+    await expect(canvas.getByText('Large Card')).toBeVisible()
+
+    // Verify body content
+    await expect(canvas.getByText('Compact padding')).toBeVisible()
+    await expect(canvas.getByText('Default padding')).toBeVisible()
+    await expect(canvas.getByText('Spacious padding')).toBeVisible()
+  },
 }
 
 /**
@@ -145,6 +184,28 @@ export const WithImage: Story = {
       </Box>
     </Card>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify image renders
+    const image = canvas.getByAltText('Green sofa')
+    await expect(image).toBeVisible()
+
+    // Verify card content
+    await expect(canvas.getByText('Modern Sofa')).toBeVisible()
+    await expect(canvas.getByText(/beautiful green velvet sofa/i)).toBeVisible()
+
+    // Verify action buttons
+    const buyBtn = canvas.getByRole('button', { name: /buy now/i })
+    const cartBtn = canvas.getByRole('button', { name: /add to cart/i })
+
+    await expect(buyBtn).toBeVisible()
+    await expect(cartBtn).toBeVisible()
+
+    // Test button interactions
+    await userEvent.click(buyBtn)
+    await userEvent.click(cartBtn)
+  },
 }
 
 /**
@@ -175,11 +236,31 @@ export const Horizontal: Story = {
       </HStack>
     </Card>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify profile image renders
+    const profileImg = canvas.getByAltText('Profile')
+    await expect(profileImg).toBeVisible()
+
+    // Verify user info
+    await expect(canvas.getByText('Sarah Wilson')).toBeVisible()
+    await expect(canvas.getByText(/Product Designer/i)).toBeVisible()
+
+    // Verify connect button
+    const connectBtn = canvas.getByRole('button', { name: /connect/i })
+    await expect(connectBtn).toBeVisible()
+    await expect(connectBtn).toBeEnabled()
+    await userEvent.click(connectBtn)
+  },
 }
 
 /**
  * Card with actions
  */
+const onCancelAction = fn()
+const onDeleteAction = fn()
+
 export const WithActions: Story = {
   render: () => (
     <Card width="320px">
@@ -189,16 +270,38 @@ export const WithActions: Story = {
       </CardBody>
       <CardFooter>
         <HStack gap={2} justify="flex-end" width="full">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={onCancelAction}>
             Cancel
           </Button>
-          <Button colorPalette="error" size="sm">
+          <Button colorPalette="error" size="sm" onClick={onDeleteAction}>
             Delete
           </Button>
         </HStack>
       </CardFooter>
     </Card>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify confirmation dialog content
+    await expect(canvas.getByText('Confirm Action')).toBeVisible()
+    await expect(canvas.getByText(/Are you sure you want to proceed/i)).toBeVisible()
+
+    // Verify action buttons
+    const cancelBtn = canvas.getByRole('button', { name: /cancel/i })
+    const deleteBtn = canvas.getByRole('button', { name: /delete/i })
+
+    await expect(cancelBtn).toBeVisible()
+    await expect(deleteBtn).toBeVisible()
+
+    // Test cancel interaction
+    await userEvent.click(cancelBtn)
+    await expect(onCancelAction).toHaveBeenCalled()
+
+    // Test delete interaction
+    await userEvent.click(deleteBtn)
+    await expect(onDeleteAction).toHaveBeenCalled()
+  },
 }
 
 /**
@@ -229,5 +332,62 @@ export const Interactive: Story = {
     // Verify body
     const body = canvas.getByTestId('card-body')
     await expect(body).toHaveTextContent('Card content for testing')
+  },
+}
+
+/**
+ * Card keyboard navigation test
+ */
+const onFirstClick = fn()
+const onSecondClick = fn()
+const onThirdClick = fn()
+
+export const KeyboardNavigation: Story = {
+  render: () => (
+    <Card width="320px">
+      <CardHeader>Keyboard Test</CardHeader>
+      <CardBody>
+        <Text>Test keyboard navigation through card actions</Text>
+      </CardBody>
+      <CardFooter>
+        <HStack gap={2}>
+          <Button size="sm" onClick={onFirstClick}>
+            First
+          </Button>
+          <Button size="sm" onClick={onSecondClick}>
+            Second
+          </Button>
+          <Button size="sm" onClick={onThirdClick}>
+            Third
+          </Button>
+        </HStack>
+      </CardFooter>
+    </Card>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Tab to first button
+    await userEvent.tab()
+    const firstBtn = canvas.getByRole('button', { name: /first/i })
+    await expect(firstBtn).toHaveFocus()
+
+    // Press Enter on first button
+    await userEvent.keyboard('{Enter}')
+    await expect(onFirstClick).toHaveBeenCalled()
+
+    // Tab to second button
+    await userEvent.tab()
+    const secondBtn = canvas.getByRole('button', { name: /second/i })
+    await expect(secondBtn).toHaveFocus()
+
+    // Press Space on second button
+    await userEvent.keyboard(' ')
+    await expect(onSecondClick).toHaveBeenCalled()
+
+    // Tab to third button
+    await userEvent.tab()
+    const thirdBtn = canvas.getByRole('button', { name: /third/i })
+    await expect(thirdBtn).toHaveFocus()
   },
 }
