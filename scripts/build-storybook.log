@@ -1,12 +1,12 @@
 
 > chakra-figma-starter@1.0.0 build-storybook
-> storybook build --output-dir=C:\Users\Rich\AppData\Local\Temp\chromatic--36792-RggKX4TshtNF
+> storybook build --output-dir=C:\Users\Rich\AppData\Local\Temp\chromatic--38332-Tfv1i3aBTG5V
 
 
 [90m┌[39m  Building storybook v10.1.11
 [90m│[39m
 [32m◇[39m  Cleaning outputDir:
-[90m│[39m  [36mC:/Users/Rich/AppData/Local/Temp/chromatic--36792-RggKX4TshtNF[39m
+[90m│[39m  [36mC:/Users/Rich/AppData/Local/Temp/chromatic--38332-Tfv1i3aBTG5V[39m
 [90m│[39m
 [32m◇[39m  Loading presets
 [90m│[39m
@@ -31,7 +31,7 @@
 [90m│[39m  [43mVite[49m transforming...
 [90m│[39m  [43mVite[49m [32m✓[39m 63 modules transformed.
 [90m│[39m
-[31m■[39m  [43mVite[49m [31mx[39m Build failed in 1.63s
+[31m■[39m  [43mVite[49m [31mx[39m Build failed in 1.53s
 [90m│[39m
 [31m■[39m  Failed to build the preview
 [90m│[39m
