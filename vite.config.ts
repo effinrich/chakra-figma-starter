@@ -12,6 +12,7 @@ export default defineConfig({
       '@/lib': resolve(__dirname, './src/lib'),
     },
   },
+  // @ts-ignore
   test: {
     globals: true,
     environment: 'jsdom',
