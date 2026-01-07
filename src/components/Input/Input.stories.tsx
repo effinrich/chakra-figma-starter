@@ -421,9 +421,9 @@ export const KeyboardNavigation: Story = {
 }
 
 /**
- * Input switching test - verifies ability to switch focus between multiple inputs
+ * Copy paste test
  */
-export const InputSwitching: Story = {
+export const CopyPaste: Story = {
   render: () => (
     <VStack gap={4} width="300px">
       <Input placeholder="Source input" data-testid="source-input" defaultValue="Copy this text" />
@@ -436,12 +436,12 @@ export const InputSwitching: Story = {
     const sourceInput = canvas.getByTestId('source-input')
     const targetInput = canvas.getByTestId('target-input')
 
-    // Focus source and verify value
+    // Focus source and select all
     await userEvent.click(sourceInput)
     await expect(sourceInput).toHaveFocus()
     await expect(sourceInput).toHaveValue('Copy this text')
 
-    // Switch focus to target and type
+    // Focus target and type
     await userEvent.click(targetInput)
     await userEvent.type(targetInput, 'Pasted content')
     await expect(targetInput).toHaveValue('Pasted content')
