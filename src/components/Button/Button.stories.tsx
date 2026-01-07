@@ -46,7 +46,7 @@ const meta: Meta<typeof Button> = {
       control: 'boolean',
       description: 'Loading state',
       table: {
-        defaultValue: { summary: 'false' },
+        defaultValue: { summary: false },
       },
     },
     disabled: {
