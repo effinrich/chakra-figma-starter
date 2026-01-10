@@ -53,6 +53,7 @@ npm run storybook
 ## 🎭 Components
 
 ### Button
+
 ```tsx
 import { Button } from '@/components'
 
@@ -62,6 +63,7 @@ import { Button } from '@/components'
 ```
 
 ### Card
+
 ```tsx
 import { Card, CardHeader, CardBody, CardFooter } from '@/components'
 
@@ -73,6 +75,7 @@ import { Card, CardHeader, CardBody, CardFooter } from '@/components'
 ```
 
 ### Input
+
 ```tsx
 import { InputField } from '@/components'
 
@@ -101,6 +104,7 @@ npm run sync:tokens
 The `figma-sync.yml` workflow runs daily and creates PRs when tokens change.
 
 Required GitHub Secrets:
+
 - `FIGMA_ACCESS_TOKEN` - Your Figma personal access token
 - `FIGMA_FILE_KEY` - The Figma file key (default: `ZUi5xVkIKAokS1nS78jN1l`)
 - `CHROMATIC_PROJECT_TOKEN` - Your Chromatic project token
@@ -108,6 +112,7 @@ Required GitHub Secrets:
 ## 🧪 Testing
 
 ### Unit Tests (Vitest)
+
 ```bash
 npm run test           # Run tests
 npm run test:ui        # Interactive UI
@@ -115,12 +120,14 @@ npm run test:coverage  # With coverage
 ```
 
 ### Storybook Interaction Tests
+
 ```bash
 npm run storybook              # Start Storybook
 npm run test:storybook         # Run interaction tests
 ```
 
 ### Playwright E2E Tests
+
 ```bash
 npm run test:e2e       # Run E2E tests
 ```
@@ -171,7 +178,7 @@ Create a `.env` file:
 
 ```env
 FIGMA_ACCESS_TOKEN=your-figma-token
-FIGMA_FILE_KEY=ZUi5xVkIKAokS1nS78jN1l
+FIGMA_FILE_KEY=The Figma file key
 CHROMATIC_PROJECT_TOKEN=your-chromatic-token
 ```
 
