@@ -21,8 +21,7 @@
       "@/components/*": ["./src/components/*"],
       "@/theme/*": ["./src/theme/*"],
       "@/lib/*": ["./src/lib/*"]
-    }
+    },
+    "types": []
   },
-  "include": ["src", "scripts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
+  "include": ["src", "scripts"]}

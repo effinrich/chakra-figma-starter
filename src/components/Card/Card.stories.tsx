@@ -281,6 +281,10 @@ export const WithActions: Story = {
     </Card>
   ),
   play: async ({ canvasElement }) => {
+    // Reset mocks to ensure clean state on each run
+    onCancelAction.mockClear()
+    onDeleteAction.mockClear()
+
     const canvas = within(canvasElement)
 
     // Verify confirmation dialog content
@@ -296,11 +300,11 @@ export const WithActions: Story = {
 
     // Test cancel interaction
     await userEvent.click(cancelBtn)
-    await expect(onCancelAction).toHaveBeenCalled()
+    await expect(onCancelAction).toHaveBeenCalledTimes(1)
 
     // Test delete interaction
     await userEvent.click(deleteBtn)
-    await expect(onDeleteAction).toHaveBeenCalled()
+    await expect(onDeleteAction).toHaveBeenCalledTimes(1)
   },
 }
 
@@ -365,6 +369,11 @@ export const KeyboardNavigation: Story = {
     </Card>
   ),
   play: async ({ canvasElement }) => {
+    // Reset mocks to ensure clean state on each run
+    onFirstClick.mockClear()
+    onSecondClick.mockClear()
+    onThirdClick.mockClear()
+
     const canvas = within(canvasElement)
 
     // Tab to first button
@@ -374,7 +383,7 @@ export const KeyboardNavigation: Story = {
 
     // Press Enter on first button
     await userEvent.keyboard('{Enter}')
-    await expect(onFirstClick).toHaveBeenCalled()
+    await expect(onFirstClick).toHaveBeenCalledTimes(1)
 
     // Tab to second button
     await userEvent.tab()
@@ -383,7 +392,7 @@ export const KeyboardNavigation: Story = {
 
     // Press Space on second button
     await userEvent.keyboard(' ')
-    await expect(onSecondClick).toHaveBeenCalled()
+    await expect(onSecondClick).toHaveBeenCalledTimes(1)
 
     // Tab to third button
     await userEvent.tab()
