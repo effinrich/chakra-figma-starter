@@ -15,7 +15,7 @@ import { writeFileSync } from 'fs'
 import { join } from 'path'
 
 const FIGMA_API_BASE = 'https://api.figma.com/v1'
-
+const FIGMA_ACCESS_TOKEN = 'figd_lJU54hRiWnTE7NZrkiu-JgVNuve89jOno0c4jDYP'
 interface FigmaColor {
   r: number
   g: number
@@ -40,8 +40,8 @@ interface FigmaVariableCollection {
 async function fetchFigmaFile(fileKey: string, token: string) {
   const response = await fetch(`${FIGMA_API_BASE}/files/${fileKey}`, {
     headers: {
-      'X-Figma-Token': token,
-    },
+      'X-Figma-Token': token
+    }
   })
 
   if (!response.ok) {
@@ -52,15 +52,20 @@ async function fetchFigmaFile(fileKey: string, token: string) {
 }
 
 async function fetchFigmaVariables(fileKey: string, token: string) {
-  const response = await fetch(`${FIGMA_API_BASE}/files/${fileKey}/variables/local`, {
-    headers: {
-      'X-Figma-Token': token,
-    },
-  })
+  const response = await fetch(
+    `${FIGMA_API_BASE}/files/${fileKey}/variables/local`,
+    {
+      headers: {
+        'X-Figma-Token': token
+      }
+    }
+  )
 
   if (!response.ok) {
     // Variables API might not be available
-    console.warn('Figma Variables API not available, using style-based extraction')
+    console.warn(
+      'Figma Variables API not available, using style-based extraction'
+    )
     return null
   }
 
@@ -72,15 +77,22 @@ function rgbaToHex(color: FigmaColor): string {
   const g = Math.round(color.g * 255)
   const b = Math.round(color.b * 255)
 
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+  return `#${r.toString(16).padStart(2, '0')}${g
+    .toString(16)
+    .padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 
-function extractColorsFromStyles(file: any): Record<string, Record<string, string>> {
+function extractColorsFromStyles(
+  file: any
+): Record<string, Record<string, string>> {
   const colors: Record<string, Record<string, string>> = {}
 
   // Extract from document styles
   if (file.styles) {
-    for (const [styleId, style] of Object.entries(file.styles) as [string, any][]) {
+    for (const [styleId, style] of Object.entries(file.styles) as [
+      string,
+      any
+    ][]) {
       if (style.styleType === 'FILL') {
         const nameParts = style.name.split('/')
         if (nameParts.length >= 2) {
@@ -109,7 +121,7 @@ function processVariables(
     spacing: {},
     radii: {},
     fontSizes: {},
-    fontWeights: {},
+    fontWeights: {}
   }
 
   for (const variable of Object.values(variables)) {
@@ -174,7 +186,7 @@ export type FigmaTokens = typeof figmaTokens
 }
 
 async function main() {
-  const token = process.env.FIGMA_ACCESS_TOKEN
+  const token = process.env.FIGMA_ACCESS_TOKEN || FIGMA_ACCESS_TOKEN
   const fileKey = process.env.FIGMA_FILE_KEY || 'ZUi5xVkIKAokS1nS78jN1l'
 
   if (!token) {
@@ -210,7 +222,7 @@ async function main() {
         spacing: {},
         radii: {},
         fontSizes: {},
-        fontWeights: {},
+        fontWeights: {}
       }
     }
 
@@ -227,7 +239,9 @@ async function main() {
 
     console.log('\n✨ Design tokens synced successfully!')
     console.log('\nNext steps:')
-    console.log('1. Review the generated tokens in src/theme/tokens.generated.ts')
+    console.log(
+      '1. Review the generated tokens in src/theme/tokens.generated.ts'
+    )
     console.log('2. Update src/theme/index.ts to use the new tokens')
     console.log('3. Run Storybook to verify visual changes')
   } catch (error) {
