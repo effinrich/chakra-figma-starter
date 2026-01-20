@@ -1,5 +1,6 @@
-- name: 'notify vercel'
+name: 'notify vercel'
   uses: 'vercel/repository-dispatch/actions/status@v1'
-  with:
-    name: Vercel - chakra-figma-starter:
-      lint
+  on:
+    deployment_status:
+    repository_dispatch:
+      types: 'solid'
