@@ -3,4 +3,4 @@ name: 'notify vercel'
   on:
     deployment_status:
     repository_dispatch:
-      types: 'vercel.deployment.success'
+      types: 'solid'
