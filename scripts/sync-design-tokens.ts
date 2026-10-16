@@ -15,7 +15,7 @@ import { writeFileSync } from 'fs'
 import { join } from 'path'
 
 const FIGMA_API_BASE = 'https://api.figma.com/v1'
-const FIGMA_ACCESS_TOKEN = 'figd_lJU54hRiWnTE7NZrkiu-JgVNuve89jOno0c4jDYP'
+const FIGMA_ACCESS_TOKEN = process.env.FIGMA_ACCESS_TOKEN
 interface FigmaColor {
   r: number
   g: number
