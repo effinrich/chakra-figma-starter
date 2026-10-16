@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import { Button as ChakraButton, type ButtonProps as ChakraButtonProps } from '@chakra-ui/react'
 
-export interface ButtonProps extends ChakraButtonProps {
+export interface ButtonProps extends Omit<ChakraButtonProps, 'variant'> {
   /**
    * Button style variant
    * @default "solid"
@@ -53,10 +53,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const chakraVariant = variant === 'link' ? 'plain' : variant
+
     return (
       <ChakraButton
         ref={ref}
-        variant={variant}
+        variant={chakraVariant}
         size={size}
         colorPalette={colorPalette}
         loading={loading}

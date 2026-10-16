@@ -1,7 +1,15 @@
 import { forwardRef } from 'react'
-import { Input as ChakraInput, type InputProps as ChakraInputProps, Box, Text } from '@chakra-ui/react'
+import {
+  Input as ChakraInput,
+  type InputProps as ChakraInputProps,
+  Box,
+  Text,
+  chakra,
+} from '@chakra-ui/react'
 
-export interface InputProps extends Omit<ChakraInputProps, 'size'> {
+const FieldLabel = chakra('label')
+
+export interface InputProps extends Omit<ChakraInputProps, 'size' | 'variant'> {
   /**
    * Input size
    * @default "md"
@@ -62,11 +70,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const chakraVariant = variant === 'filled' ? 'subtle' : variant
+
     return (
       <ChakraInput
         ref={ref}
         size={size}
-        variant={variant}
+        variant={chakraVariant}
         aria-invalid={isInvalid}
         disabled={isDisabled}
         readOnly={isReadOnly}
@@ -114,8 +124,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     return (
       <Box width="full">
         {label && (
-          <Text
-            as="label"
+          <FieldLabel
             htmlFor={inputId}
             display="block"
             mb={1}
@@ -129,7 +138,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 *
               </Text>
             )}
-          </Text>
+          </FieldLabel>
         )}
         <Input ref={ref} id={inputId} isInvalid={isInvalid} isRequired={isRequired} {...props} />
         {isInvalid && errorMessage ? (

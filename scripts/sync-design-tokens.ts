@@ -30,13 +30,6 @@ interface FigmaVariable {
   valuesByMode: Record<string, unknown>
 }
 
-interface FigmaVariableCollection {
-  id: string
-  name: string
-  modes: Array<{ modeId: string; name: string }>
-  variableIds: string[]
-}
-
 async function fetchFigmaFile(fileKey: string, token: string) {
   const response = await fetch(`${FIGMA_API_BASE}/files/${fileKey}`, {
     headers: {
@@ -89,15 +82,14 @@ function extractColorsFromStyles(
 
   // Extract from document styles
   if (file.styles) {
-    for (const [styleId, style] of Object.entries(file.styles) as [
+    for (const [, style] of Object.entries(file.styles) as [
       string,
-      any
+      { styleType?: string; name: string }
     ][]) {
       if (style.styleType === 'FILL') {
         const nameParts = style.name.split('/')
         if (nameParts.length >= 2) {
           const colorGroup = nameParts[0].toLowerCase()
-          const shade = nameParts[1]
 
           if (!colors[colorGroup]) {
             colors[colorGroup] = {}
@@ -113,8 +105,7 @@ function extractColorsFromStyles(
 }
 
 function processVariables(
-  variables: Record<string, FigmaVariable>,
-  collections: Record<string, FigmaVariableCollection>
+  variables: Record<string, FigmaVariable>
 ): Record<string, any> {
   const tokens: Record<string, any> = {
     colors: {},
@@ -209,10 +200,7 @@ async function main() {
 
     if (variablesResponse?.meta?.variables) {
       console.log('   Using Figma Variables API')
-      tokens = processVariables(
-        variablesResponse.meta.variables,
-        variablesResponse.meta.variableCollections
-      )
+      tokens = processVariables(variablesResponse.meta.variables)
     } else {
       // Fallback to file styles
       console.log('   Using Figma Styles API (fallback)')
