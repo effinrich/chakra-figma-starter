@@ -1,6 +1,6 @@
 name: 'notify vercel'
-  uses: 'vercel/repository-dispatch/actions/status@v1'
-  on:
-    deployment_status:
-    repository_dispatch:
-      types: 'solid'
+uses: 'vercel/repository-dispatch/actions/status@v1'
+on:
+  deployment_status:
+  repository_dispatch:
+    types: 'solid'
